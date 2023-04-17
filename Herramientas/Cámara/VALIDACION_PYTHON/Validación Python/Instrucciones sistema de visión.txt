@@ -1,0 +1,11 @@
+Para utilizar el sistema de visión:
+1. Pasar el video por el filtro de colores.
+	a. Modificar el nombre del video y desdocumentar la línea que genera los frames. 		Correr el código.
+	b. Volver a comentar dicha línea.
+	c. Desdocumentar uno de los prints de "print(cntsCOLOR)", donde COLOR es uno de los 		colores que aparecen en el video. Correr el código.
+	d. Revise en cada uno de los frames que estén las áreas que deben estar. Recuerde que 	las áreas pequeñas son entre 300 y 2000, mientras que las grandes son entre 2000 y 	6300.
+	e. Estas líneas impresas están en órden del frame que está guardado en la carpeta 		"Imagenes_Ajuste_Areas". Los frames en los que las áreas salen distintas a las que 	deberían bórrelos de dicha carpeta. Un ejemplo sería si salen más de tres áreas 	pequeñas cuando solo deberían haber 2.
+	f. Repita el proceso con cada color.
+	g. Si no está funcionando, intente con otro video.
+2. Una vez asegurado de que solo existan frames correctos, copie los frames restantes a la carpeta "ImagenesRbk".
+3. Pase el archivo por la validación y siga las instrucciones del mismo, debería funcionar.
