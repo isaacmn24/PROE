@@ -11,7 +11,7 @@ import matplotlib.animation as animation
 
 def animate(i, dataList, ser):
     arduinoData_string = ser.readline().decode('ascii') # Decode receive Arduino data as a formatted string
-    #print(i)                                           # 'i' is a incrementing variable based upon frames = x argument
+    print(i)                                           # 'i' is a incrementing variable based upon frames = x argument
 
     datos_robot = arduinoData_string.split("; ")        # Separo los números que envía la lista
     x_robot1 = []       # Almaceno aqui la posición x del robot 1
@@ -41,7 +41,7 @@ fig = plt.figure()                                      # Create Matplotlib plot
 ax = fig.add_subplot(111)                               # Add subplot to main fig window
 
 
-ser = serial.Serial("COM1", 9600)                       # Establish Serial object with COM port and BAUD rate to match Arduino Port/rate
+ser = serial.Serial("COM11   ", 9600)                       # Establish Serial object with COM port and BAUD rate to match Arduino Port/rate
 time.sleep(2)                                           # Time delay for Arduino Serial initialization 
 
                                                         # Matplotlib Animation Fuction that takes takes care of real time plot.

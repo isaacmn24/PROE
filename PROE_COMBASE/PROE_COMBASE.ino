@@ -111,11 +111,12 @@ void loop() {
       tipSens = (int8_t)buf[6];
       dis = *(int16_t*)&buf[7];
       angulo = *(int16_t*)&buf[9];
+      serialPrint(idMensajeRecibido);serialPrint(", ");serialPrint(posX);serialPrint(", ");serialPrintln(posY);
     }
     if(tipSens != 20){ // Cuando recibe una distancia el tipo de sensor es 20
-      serialPrint(idMensajeRecibido);serialPrint("; ");serialPrint(posX);serialPrint("; ");serialPrint(posY);
-      serialPrint("; ");serialPrint(rot);serialPrint("; ");serialPrint(tipSens);
-      serialPrint("; ");serialPrint(dis);serialPrint("; ");serialPrintln(angulo);
+      serialPrint(idMensajeRecibido);serialPrint(", ");serialPrint(posX);serialPrint(", ");serialPrint(posY);
+      serialPrint(", ");serialPrint(rot);serialPrint(", ");serialPrint(tipSens);
+      serialPrint(", ");serialPrint(dis);serialPrint(", ");serialPrintln(angulo);
     }
   }
   
