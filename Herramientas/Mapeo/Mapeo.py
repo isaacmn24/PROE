@@ -1,52 +1,51 @@
-"""
-# El programa recibe datos a trav茅s del puerto serial en y los organiza
-# en una serie de arrays que son graficaados como ejes coordenados en tiempo real
-
-Cr閐itos: https://github.com/WaveShapePlay/Arduino_RealTimePlot/tree/master
-"""
 import time
 import serial
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+import re
 
-def animate(i, dataList, ser):
-    arduinoData_string = ser.readline().decode('ascii') # Decode receive Arduino data as a formatted string
-    #print(i)                                           # 'i' is a incrementing variable based upon frames = x argument
+# Inicializa listas para almacenar las coordenadas de cada robot
+robot_coordinates = {}
 
-    datos_robot = arduinoData_string.split("; ")        # Separo los n鷐eros que env韆 la lista
-    x_robot1 = []       # Almaceno aqui la posici髇 x del robot 1
-    y_robot1 = []       # Almaceno aqui la posici髇 y del robot 1
+# Colores para los robots
+colors = ['b', 'g', 'r']
 
-    try:
-        x_robot1[0] = float(datos_robot[1])     # Convierto a float 
-        y_robot1[1] = float(datos_robot[2])     # Convierto a float
-
-    except:                                             # Pass if data point is bad                               
-        pass
-
-    ax.clear()                                          # Clear last data frame
+# Define una funci贸n para procesar los datos en tiempo real
+def animate(i, ser):
+    arduinoData_string = ser.readline().decode('utf-8').strip()  # Lee una l铆nea del puerto serie
+    match = re.search(r'(\d+:\d+:\d+\.\d+) -> (\d+); (-?\d+); (-?\d+)', arduinoData_string)
     
-    #getPlotFormat()
-    ax.plot(dataList)                                   # Plot new data frame
-    
+    if match:
+        robot_id = int(match.group(2))
+        x = int(match.group(3))
+        y = int(match.group(4))
 
-def getPlotFormat():
-    ax.set_ylim([0, 1200])                              # Set Y axis limit of plot
-    ax.set_title("Arduino Data")                        # Set title of figure
-    ax.set_ylabel("Value")                              # Set title of y axis
+        if robot_id not in robot_coordinates:
+            robot_coordinates[robot_id] = {'x': [], 'y': []}
 
-dataList = []                                           # Create empty list variable for later use
-                                                        
-fig = plt.figure()                                      # Create Matplotlib plots fig is the 'higher level' plot window
-ax = fig.add_subplot(111)                               # Add subplot to main fig window
+        robot_coordinates[robot_id]['x'].append(x)
+        robot_coordinates[robot_id]['y'].append(y)
 
+        ax.clear()
+        for i, robot_id in enumerate(robot_coordinates.keys()):
+            ax.plot(robot_coordinates[robot_id]['x'], robot_coordinates[robot_id]['y'], label=f'Robot {robot_id}', color=colors[i])
 
-ser = serial.Serial("COM1", 9600)                       # Establish Serial object with COM port and BAUD rate to match Arduino Port/rate
-time.sleep(2)                                           # Time delay for Arduino Serial initialization 
+        ax.set_xlabel('Coordenada X')
+        ax.set_ylabel('Coordenada Y')
+        ax.set_title('Rastro de Robots')
+        ax.legend(loc='upper left')
+        ax.grid(True)
 
-                                                        # Matplotlib Animation Fuction that takes takes care of real time plot.
-                                                        # Note that 'fargs' parameter is where we pass in our dataList and Serial object. 
-ani = animation.FuncAnimation(fig, animate, frames=100, fargs=(dataList, ser), interval=1000) 
+# Configura el puerto serie (ajusta el puerto y la velocidad seg煤n tus necesidades)
+ser = serial.Serial('COM3', 9600)  # Reemplaza 'COM3' con el puerto serie correcto
+time.sleep(2)  # Tiempo de espera para la inicializaci贸n del puerto serie de Arduino
 
-plt.show()                                              # Keep Matplotlib plot persistent on screen until it is closed
-ser.close()                                             # Close Serial connection when plot is closed
+# Crea una figura inicial
+fig = plt.figure(figsize=(10, 6))
+ax = fig.add_subplot(111)
+
+# Crea la animaci贸n para actualizar en tiempo real
+ani = animation.FuncAnimation(fig, animate, fargs=(ser,), interval=1000)
+
+plt.show()  # Mantiene el gr谩fico visible hasta que se cierre
+ser.close()  # Cierra la conexi贸n del puerto serie al final
