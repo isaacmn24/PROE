@@ -4,8 +4,9 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import re
 
-# Inicializa listas para almacenar las coordenadas de cada robot
-robot_coordinates = {}
+def animate(i, dataList, ser):
+    arduinoData_string = ser.readline().decode('ascii') # Decode receive Arduino data as a formatted string
+    print(i)                                           # 'i' is a incrementing variable based upon frames = x argument
 
 # Colores para los robots
 colors = ['b', 'g', 'r']
@@ -30,11 +31,8 @@ def animate(i, ser):
         for i, robot_id in enumerate(robot_coordinates.keys()):
             ax.plot(robot_coordinates[robot_id]['x'], robot_coordinates[robot_id]['y'], label=f'Robot {robot_id}', color=colors[i])
 
-        ax.set_xlabel('Coordenada X')
-        ax.set_ylabel('Coordenada Y')
-        ax.set_title('Rastro de Robots')
-        ax.legend(loc='upper left')
-        ax.grid(True)
+ser = serial.Serial("COM11   ", 9600)                       # Establish Serial object with COM port and BAUD rate to match Arduino Port/rate
+time.sleep(2)                                           # Time delay for Arduino Serial initialization 
 
 # Configura el puerto serie (ajusta el puerto y la velocidad según tus necesidades)
 ser = serial.Serial('COM3', 9600)  # Reemplaza 'COM3' con el puerto serie correcto

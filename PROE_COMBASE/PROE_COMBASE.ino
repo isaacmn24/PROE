@@ -63,8 +63,8 @@ void setup()
   pinMode(RFM69_RST, OUTPUT);
   digitalWrite(RFM69_RST, LOW);
 
-  //serialPrintln("Prueba base");
-  //serialPrintln();
+  serialPrintln("Prueba base");
+  serialPrintln();
 
   // manual reset
   digitalWrite(RFM69_RST, HIGH);
@@ -76,8 +76,8 @@ void setup()
     serialPrintln("RFM69 radio init failed");
     while (1);
   }
-  //serialPrintln("RFM69 radio init OK!");
-  //Serial.println("RFM69 radio init OK!");
+  serialPrintln("RFM69 radio init OK!");
+  Serial.println("RFM69 radio init OK!");
   
   // Setear frecuencia
   if (!rf69.setFrequency(RF69_FREQ)) {
@@ -87,7 +87,7 @@ void setup()
   // Configurar potencia
   rf69.setTxPower(20, true);   //Rango de 14-20 para la potencia, segundo argumento debe ser verdadero para el 69HCW.
 
-  //Serial.print("RFM69 radio @");  Serial.print((int)RF69_FREQ);  Serial.println(" MHz");
+  Serial.print("RFM69 radio @");  Serial.print((int)RF69_FREQ);  Serial.println(" MHz");
 
   sincronizar(); // Envía el valor de clock a los robots del enjambre
 
@@ -111,11 +111,12 @@ void loop() {
       tipSens = (int8_t)buf[6];
       dis = *(int16_t*)&buf[7];
       angulo = *(int16_t*)&buf[9];
+      serialPrint(idMensajeRecibido);serialPrint(", ");serialPrint(posX);serialPrint(", ");serialPrintln(posY);
     }
     if(tipSens != 20){ // Cuando recibe una distancia el tipo de sensor es 20
-      serialPrint(idMensajeRecibido);serialPrint("; ");serialPrint(posX);serialPrint("; ");serialPrint(posY);
-      serialPrint("; ");serialPrint(rot);serialPrint("; ");serialPrint(tipSens);
-      serialPrint("; ");serialPrint(dis);serialPrint("; ");serialPrintln(angulo);
+      serialPrint(idMensajeRecibido);serialPrint(", ");serialPrint(posX);serialPrint(", ");serialPrint(posY);
+      serialPrint(", ");serialPrint(rot);serialPrint(", ");serialPrint(tipSens);
+      serialPrint(", ");serialPrint(dis);serialPrint(", ");serialPrintln(angulo);
     }
   }
   
@@ -125,21 +126,12 @@ void loop() {
 /// \brief Envía el valor del clock en el registro para sincronizar los robots.
 /// \return Devuelve true si se envía el mensaje y false en caso contrario.
 bool sincronizar(){
-
-  //Serial.println("Entrando en la función sincronizar");
-
   timeStamp1 = RTC->MODE0.COUNT.reg; //Extraer tiempo del RTC de la base
   uint8_t reloj[4];
   uint32_t* ptrReloj = (uint32_t*)&timeStamp1;       //Utilizo el puntero para extraer la información del dato flotante.
   for(uint8_t i = 0; i < 4; i++){
     reloj[i] = *ptrReloj >> i*8;  //La parte de "(255UL << i*8)) >> i*8" es solo para ir acomodando los bytes en el array de envío mensaje[].
-  
-  
-  // Agrega más mensajes de depuración para verificar valores de variables
-  //Serial.print("Valor de timeStamp1: ");
-  //Serial.println(timeStamp1);
   }
-
 
   return rf69_manager.sendto(reloj, sizeof(reloj), RH_BROADCAST_ADDRESS);     //Enviar valor del RTC al esclavo
 }
